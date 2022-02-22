@@ -19,7 +19,7 @@ jobs:
             - v2-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
             - v2-deps-{{ .Branch }}-
             - v2-deps-
-      - npm ci
+      - run: npm ci
       - save_cache:
           key: v2-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
@@ -27,7 +27,7 @@ jobs:
             - ~/.cache
       - run:
           name: "Run USDA Forest Service Scrapper"
-          command: '$(npm bin)/cypress run --spec cypress/integration/usda-forest-service-scraper.js --reporter junit --reporter-options "mochaFile=results/my-test-output.xml"'
+          command: '$(npm bin)/cypress run --reporter junit --reporter-options "mochaFile=results/my-test-output.xml"'
       - store_test_results:
           path: results
       - store_artifacts:
@@ -40,4 +40,4 @@ jobs:
 workflows:
   run-forest-service-scrapper-workflow:
     jobs:
-      - run-forest-service-scrapper:
+      - run-forest-service-scrapper
