@@ -14,9 +14,9 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-          - v2-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
-          - v2-deps-{{ .Branch }}-
-          - v2-deps-
+            - v2-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - v2-deps-{{ .Branch }}-
+            - v2-deps-
       - npm ci
       - save_cache:
           key: v2-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
@@ -29,7 +29,7 @@ jobs:
     steps:
       - run:
           name: "Run USDA Forest Service Scrapper"
-          command: "$(npm bin)/cypress run --reporter junit --reporter-options "mochaFile=results/my-test-output.xml"
+          command: '$(npm bin)/cypress run --reporter junit --reporter-options "mochaFile=results/my-test-output.xml"'
       - store_test_results:
           path: results
       - store_artifacts:
