@@ -2,25 +2,52 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
+# build job parameters as a template
+defaults: &defaults
+  # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
+  # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+  docker:
+    - image: cypress/browsers:chrome67
+
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  say-hello:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
-    docker:
-      - image: cimg/base:stable
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v2-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          - v2-deps-{{ .Branch }}-
+          - v2-deps-
+      - npm ci
+      - save_cache:
+          key: v2-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          paths:
+            - ~/.npm
+            - ~/.cache
+  run-forest-service-scrapper:
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
-      - checkout
+      <<: *defaults
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+          name: "Run USDA Forest Service Scrapper"
+          command: "$(npm bin)/cypress run --reporter junit --reporter-options "mochaFile=results/my-test-output.xml"
+      - store_test_results:
+          path: results
+      - store_artifacts:
+          path: cypress/videos
+      - store_artifacts:
+          path: cypress/screenshots
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  say-hello-workflow:
+  run-forest-service-scrapper-workflow:
     jobs:
-      - say-hello
+      - build
+      - run-forest-service-scrapper:
+          requires:
+            - build
