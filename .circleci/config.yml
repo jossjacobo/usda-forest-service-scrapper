@@ -19,7 +19,7 @@ jobs:
             - v2-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
             - v2-deps-{{ .Branch }}-
             - v2-deps-
-      - npm ci
+      - run: npm ci
       - save_cache:
           key: v2-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
@@ -40,4 +40,4 @@ jobs:
 workflows:
   run-forest-service-scrapper-workflow:
     jobs:
-      - run-forest-service-scrapper:
+      - run-forest-service-scrapper
