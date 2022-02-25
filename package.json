@@ -20,5 +20,9 @@
   "license": "ISC",
   "devDependencies": {
     "cypress": "^9.5.0"
+  },
+  "dependencies": {
+    "@notionhq/client": "^0.4.13",
+    "dotenv": "^16.0.0"
   }
 }

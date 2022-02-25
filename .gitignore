@@ -107,3 +107,6 @@ dist
 results/
 cypress/screenshots
 cypress/videos
+
+# Ignore main .env
+.env
