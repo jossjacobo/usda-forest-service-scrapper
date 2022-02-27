@@ -1,15 +1,16 @@
-import "dotenv/config";
-import { Client } from "@notionhq/client";
-
-const notion = new Client({
-  auth: process.env.NOTION_TOKEN,
-});
-const databaseId = process.env.NOTION_DATABASE_ID;
+const notion = require("../../notion");
 
 describe("usda forest service scrapper", () => {
+  before(() => {
+    cy.visit("https://www.fs.usda.gov/");
+    notion.queryForestServiceTrails().then((results) => {
+      Cypress.env("pages", results);
+    });
+  });
+
   beforeEach(() => {
     cy.visit(
-      "https://www.fs.usda.gov/recarea/inyo/recreation/recarea/?recid=20464&actid=50"
+      Cypress.env("pages")[0].properties["Forest Service Trail URL"].url
     );
   });
 
@@ -17,14 +18,14 @@ describe("usda forest service scrapper", () => {
     cy.get("#centercol")
       .contains("Area Status")
       .parent()
-      .should(($span) => {
+      .should(async ($span) => {
         const text = $span
           .text()
           .toLocaleLowerCase()
           .replace("area status:", "")
           .trim();
-
-        expect(text).contains("open");
+        const pageId = Cypress.env("pages")[0].id;
+        await notion.updateTrail(pageId, text);
       });
   });
 });

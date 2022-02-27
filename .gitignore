@@ -110,3 +110,5 @@ cypress/videos
 
 # Ignore main .env
 .env
+
+.DS_Store
